@@ -20,14 +20,15 @@ public class Program {
         do {
             mostraTabuleiro(tabuleiro);
             String jogada = pedeJogada(jogador, tabuleiro);
-            fazJogada(jogador, jogada, tabuleiro);
-            ganhador = verificaGanhador(jogada, tabuleiro);
+            int i = fazJogada(jogador, jogada, tabuleiro);
+            ganhador = verificaSeGanhou(jogador, jogada, i, tabuleiro);
             if (!ganhador.equals(VAZIO)) {
                 break;
             }
             jogador = trocaJogador(jogador);
         } while (!terminou);
 
+        mostraTabuleiro(tabuleiro);
         System.out.println("Ganhador: " + ganhador);
     }
 
@@ -90,10 +91,11 @@ public class Program {
         return !tabuleiro[0][j].equals(VAZIO);
     }
 
-    public static void fazJogada(String jogador, String jogada, String[][] tabuleiro) {
+    public static int fazJogada(String jogador, String jogada, String[][] tabuleiro) {
         int j = traduzJogadaParaColuna(jogada);
         int i = achaLinhaVazia(jogada, tabuleiro);
         tabuleiro[i][j] = jogador;
+        return i;
     }
 
     public static int traduzJogadaParaColuna(String jogada) {
@@ -129,13 +131,16 @@ public class Program {
         return -1;
     }
 
-    public static String verificaGanhador(String jogada, String[][] tabuleiro) {
+    public static String verificaSeGanhou(String jogador, String jogada, int i, String[][] tabuleiro) {
         String ganhador = VAZIO;
 
         if (verificaEmpate(tabuleiro)) {
             ganhador = EMPATE;
         } else {
-
+            int j = traduzJogadaParaColuna(jogada);
+            if (verifica(jogador, tabuleiro, i, j)) {
+                ganhador = jogador;
+            }
         }
 
         return ganhador;
@@ -149,6 +154,65 @@ public class Program {
         }
 
         return true;
+    }
+
+    public static boolean verifica(String jogador, String[][] tabuleiro, int i, int j) {
+        boolean ganhouNaLinha = verificaLinha(jogador, tabuleiro, i, j);
+        boolean ganhouNaColuna = verificaColuna(jogador, tabuleiro, i, j);
+        boolean ganhouNaDiagonalPrincipal = verificaDiagonalPrincipal(jogador, tabuleiro, i, j);
+        boolean ganhouNaDiagonalSecundaria = verificaDiagonalSecundaria(jogador, tabuleiro, i, j);
+
+        return ganhouNaLinha || ganhouNaColuna || ganhouNaDiagonalPrincipal || ganhouNaDiagonalSecundaria;
+    }
+
+    private static boolean verificaLinha(String jogador, String[][] tabuleiro, int i, int j) {
+        boolean ganhou = false;
+
+        int esquerda = Math.max(j - 3, 0);
+        int direita = Math.min(tabuleiro[i].length - 1, j + 3);
+
+        int contador = 0;
+        for (int c = esquerda; c <= direita; c++) {
+            if (tabuleiro[i][c].equals(jogador)) {
+                contador++;
+                if (contador == 4) {
+                    ganhou = true;
+                    break;
+                }
+            } else {
+                contador = 0;
+            }
+        }
+
+        return ganhou;
+    }
+
+    private static boolean verificaColuna(String jogador, String[][] tabuleiro, int i, int j) {
+        int contador = 0;
+
+        int cima = Math.max(i - 3, 0);
+        int baixo = Math.min(tabuleiro.length - 1, i + 3);
+
+        for (int l = cima; l <= baixo; l++) {
+            if (tabuleiro[l][j].equals(jogador)) {
+                contador++;
+                if (contador >= 4) {
+                    break;
+                }
+            } else {
+                contador = 0;
+            }
+        }
+
+        return contador >= 4;
+    }
+
+    private static boolean verificaDiagonalPrincipal(String jogador, String[][] tabuleiro, int i, int j) {
+        return false;
+    }
+
+    private static boolean verificaDiagonalSecundaria(String jogador, String[][] tabuleiro, int i, int j) {
+        return false;
     }
 
     private static String trocaJogador(String jogador) {
