@@ -165,57 +165,109 @@ public class Program {
         return ganhouNaLinha || ganhouNaColuna || ganhouNaDiagonalPrincipal || ganhouNaDiagonalSecundaria;
     }
 
-    private static boolean verificaLinha(String jogador, String[][] tabuleiro, int i, int j) {
+    public static boolean verificaLinha(String jogador, String[][] tabuleiro, int i, int j) {
         boolean ganhou = false;
 
-        int esquerda = Math.max(j - 3, 0);
-        int direita = Math.min(tabuleiro[i].length - 1, j + 3);
+        int esquerda = j - 3;
+        int direita = j + 3;
 
         int contador = 0;
         for (int c = esquerda; c <= direita; c++) {
-            if (tabuleiro[i][c].equals(jogador)) {
-                contador++;
-                if (contador == 4) {
-                    ganhou = true;
-                    break;
+            if (dentroTabuleiro(tabuleiro, i, c)) {
+                if (tabuleiro[i][c].equals(jogador)) {
+                    contador++;
+                    if (contador == 4) {
+                        ganhou = true;
+                        break;
+                    }
+                } else {
+                    contador = 0;
                 }
-            } else {
-                contador = 0;
             }
         }
 
         return ganhou;
     }
 
-    private static boolean verificaColuna(String jogador, String[][] tabuleiro, int i, int j) {
+    public static boolean verificaColuna(String jogador, String[][] tabuleiro, int i, int j) {
         int contador = 0;
 
-        int cima = Math.max(i - 3, 0);
-        int baixo = Math.min(tabuleiro.length - 1, i + 3);
+        int cima = i - 3;
+        int baixo = i + 3;
 
         for (int l = cima; l <= baixo; l++) {
-            if (tabuleiro[l][j].equals(jogador)) {
-                contador++;
-                if (contador >= 4) {
-                    break;
+            if (dentroTabuleiro(tabuleiro, l, j)) {
+                if (tabuleiro[l][j].equals(jogador)) {
+                    contador++;
+                    if (contador >= 4) {
+                        break;
+                    }
+                } else {
+                    contador = 0;
                 }
-            } else {
-                contador = 0;
             }
         }
 
         return contador >= 4;
     }
 
-    private static boolean verificaDiagonalPrincipal(String jogador, String[][] tabuleiro, int i, int j) {
-        return false;
+    public static boolean verificaDiagonalPrincipal(String jogador, String[][] tabuleiro, int i, int j) {
+        boolean ganhou = false;
+
+        int esquerda = j - 3;
+        int direita = j + 3;
+        int cima = i - 3;
+        int baixo = i + 3;
+
+        int contador = 0;
+        for (int l = cima, c = esquerda; l <= baixo && c <= direita; l++, c++) {
+            if (dentroTabuleiro(tabuleiro, l, c)) {
+                if (tabuleiro[l][c].equals(jogador)) {
+                    contador++;
+                    if (contador == 4) {
+                        ganhou = true;
+                        break;
+                    }
+                } else {
+                    contador = 0;
+                }
+            }
+        }
+
+        return ganhou;
     }
 
-    private static boolean verificaDiagonalSecundaria(String jogador, String[][] tabuleiro, int i, int j) {
-        return false;
+    public static boolean verificaDiagonalSecundaria(String jogador, String[][] tabuleiro, int i, int j) {
+        boolean ganhou = false;
+
+        int esquerda = j - 3;
+        int direita = j + 3;
+        int cima = i - 3;
+        int baixo = i + 3;
+
+        int contador = 0;
+        for (int l = cima, c = direita; l <= baixo && c >= esquerda; l++, c--) {
+            if (dentroTabuleiro(tabuleiro, l, c)) {
+                if (tabuleiro[l][c].equals(jogador)) {
+                    contador++;
+                    if (contador == 4) {
+                        ganhou = true;
+                        break;
+                    }
+                } else {
+                    contador = 0;
+                }
+            }
+        }
+
+        return ganhou;
     }
 
-    private static String trocaJogador(String jogador) {
+    public static boolean dentroTabuleiro(String[][] tabuleiro, int i, int j) {
+        return i >= 0 && j >= 0 && i < tabuleiro.length && j < tabuleiro[i].length;
+    }
+
+    public static String trocaJogador(String jogador) {
         if (jogador.equals(JOGADOR_1)) {
             return JOGADOR_2;
         } else {
